@@ -40,7 +40,7 @@ export default function FormPage() {
       await api.post("/records", form);
       toast.success("Voter record added successfully");
       navigate("/table");
-    } catch (err) {
+    } catch {
       toast.error("Failed to save record");
     } finally {
       setLoading(false);
@@ -48,20 +48,26 @@ export default function FormPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-blue-100 px-4">
+    <div className="min-h-screen form-bg flex items-center justify-center px-4">
       <form
         onSubmit={submit}
-        className="w-full max-w-xl bg-white rounded-2xl shadow-xl p-8"
+        className="glass-card w-full max-w-3xl rounded-3xl shadow-2xl p-8 md:p-10"
       >
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-          ➕ Add Voter Record
-        </h2>
+        {/* Header */}
+        <div className="mb-8 text-center">
+          <h2 className="text-3xl font-extrabold text-gray-800">
+            Add Voter Record
+          </h2>
+          <p className="text-gray-600 mt-2 text-sm">
+            Fill in all required voter information carefully
+          </p>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Form */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 input-animate">
           <Input
             label="Serial No"
             name="serialNo"
-            type="number"
             value={form.serialNo}
             error={errors.serialNo}
             onChange={handleChange}
@@ -108,23 +114,27 @@ export default function FormPage() {
           />
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-6 w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 py-3 text-white font-semibold hover:bg-indigo-700 transition disabled:opacity-60"
-        >
-          {loading && (
-            <span className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-          )}
-          {loading ? "Saving..." : "Save Record"}
-        </button>
-        {/* added a button to go back to the table */}
-        <button
-          onClick={() => navigate("/table")}
-          className="mt-6 w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 py-3 text-white font-semibold hover:bg-indigo-700 transition disabled:opacity-60"
-        >
-          Go To List
-        </button>
+        {/* Actions */}
+        <div className="mt-8 flex flex-col md:flex-row gap-4">
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex-1 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 py-3 text-white font-semibold hover:from-indigo-700 hover:to-blue-700 transition disabled:opacity-60 flex items-center justify-center gap-2"
+          >
+            {loading && (
+              <span className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+            )}
+            {loading ? "Saving..." : "Save Record"}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate("/table")}
+            className="flex-1 rounded-xl border border-indigo-600 py-3 text-indigo-600 font-semibold hover:bg-indigo-50 transition"
+          >
+            View List
+          </button>
+        </div>
       </form>
     </div>
   );

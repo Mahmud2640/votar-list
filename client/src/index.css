@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* tailwind.css */
 .input {
   @apply border rounded-lg px-3 py-2 w-full focus:ring focus:ring-blue-200;
 }
@@ -30,4 +31,79 @@
 
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-out;
+}
+
+/* Skeleton base */
+.skeleton-btn {
+  @apply h-10 w-20 bg-gray-300 rounded-lg;
+}
+
+.skeleton-title {
+  @apply h-8 w-60 bg-gray-300 rounded;
+}
+
+.skeleton-search {
+  @apply h-10 w-full md:w-64 bg-gray-300 rounded-lg;
+}
+
+.skeleton-th {
+  @apply h-4 w-24 bg-gray-300 rounded;
+}
+
+.skeleton-td {
+  @apply h-4 w-full bg-gray-200 rounded;
+}
+
+/* form page */
+
+/* Background image overlay */
+.form-bg {
+  background-image: linear-gradient(
+      to bottom right,
+      rgba(78, 70, 229, 0.728),
+      rgba(37, 100, 235, 0.632)
+    ),
+    url("/bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Glass card effect */
+.glass-card {
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* Smooth input animation */
+.input-animate input {
+  transition: all 0.2s ease;
+}
+.input-animate input:focus {
+  transform: translateY(-1px);
+}
+
+/* table page */
+.table-card {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 255, 255, 1)
+  );
+}
+
+.table-row-hover:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(79, 70, 229, 0.06),
+    rgba(99, 102, 241, 0.03)
+  );
+}
+
+.sticky-head th {
+  position: sticky;
+  top: 0;
+  background: #eef2ff;
+  z-index: 10;
 }
