@@ -39,7 +39,16 @@ export default function FormPage() {
       setLoading(true);
       await api.post("/records", form);
       toast.success("Voter record added successfully");
-      navigate("/table");
+      // Reset form state
+      setForm({
+        serialNo: "",
+        name: "",
+        fatherName: "",
+        voterNo: "",
+        house: "",
+        holdingNo: "",
+      });
+      // navigate("/table");
     } catch {
       toast.error("Failed to save record");
     } finally {

@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../services/api";
 import EditModal from "../components/EditModal";
 import TableSkeleton from "../components/TableSkeleton";
+import { useReactToPrint } from "react-to-print";
 
 export default function TablePage() {
   const navigate = useNavigate();
@@ -16,11 +17,20 @@ export default function TablePage() {
   const [loading, setLoading] = useState(true);
   const [fetching, setFetching] = useState(false);
 
+  const printRef = useRef(null);
+
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+    documentTitle: "Voter Records",
+  });
+
+  /* ---------------- Debounce Search ---------------- */
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 400);
     return () => clearTimeout(timer);
   }, [search]);
 
+  /* ---------------- Load Data ---------------- */
   const loadData = async (isInitial = false) => {
     try {
       isInitial ? setLoading(true) : setFetching(true);
@@ -42,6 +52,7 @@ export default function TablePage() {
     loadData();
   }, [debouncedSearch]);
 
+  /* ---------------- Delete ---------------- */
   const deleteRecord = async (id) => {
     if (!confirm("Delete this record?")) return;
     try {
@@ -58,8 +69,8 @@ export default function TablePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        {/* ================= HEADER ================= */}
+        <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 print-hide">
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate("/")}
@@ -72,37 +83,60 @@ export default function TablePage() {
                 Voter Records
               </h1>
               <p className="text-sm text-gray-500">
-                Manage and update voter information
+                Search, manage and print voter information
               </p>
             </div>
           </div>
 
-          {/* Search */}
-          <div className="relative w-full md:w-72">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by name or voter no"
-              className="w-full pl-10 pr-4 py-2 rounded-xl border shadow-sm focus:ring-2 focus:ring-indigo-300"
-            />
-            <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
+          <div className="flex gap-3 items-center">
+            {/* Search */}
+            <div className="relative w-72">
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search by name or voter no"
+                className="w-full pl-10 pr-4 py-2 rounded-xl border shadow-sm focus:ring-2 focus:ring-indigo-300"
+              />
+              <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
+            </div>
+
+            {/* Print Button */}
+            <button
+              disabled={records.length === 0}
+              onClick={handlePrint}
+              className="flex items-center gap-2 px-5 py-2 rounded-xl
+             bg-green-600 text-white shadow-lg
+             hover:bg-green-700 disabled:opacity-50
+             disabled:cursor-not-allowed"
+            >
+              🖨 Print
+            </button>
           </div>
         </div>
 
-        {/* Table */}
+        {/* ================= TABLE ================= */}
         <div
-          className={`relative overflow-x-auto rounded-2xl shadow-xl table-card ${
+          ref={printRef}
+          className={`relative overflow-x-auto rounded-2xl shadow-xl bg-white ${
             fetching ? "opacity-60 pointer-events-none" : ""
           }`}
         >
+          {/* Print Header */}
+          <div className="hidden print:block text-center mb-6">
+            <h2 className="text-2xl font-bold tracking-wide">Voter List</h2>
+            <p className="text-sm mt-1">
+              Printed on: {new Date().toLocaleDateString()}
+            </p>
+          </div>
+
           {fetching && (
             <div className="absolute inset-0 bg-white/40 backdrop-blur-sm z-10" />
           )}
 
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="sticky-head">
-              <tr>
+            <thead>
+              <tr className="bg-gray-100">
                 {[
                   "Serial",
                   "Voter No",
@@ -114,7 +148,9 @@ export default function TablePage() {
                 ].map((h) => (
                   <th
                     key={h}
-                    className="px-6 py-4 text-left text-sm font-semibold text-gray-700"
+                    className={`px-6 py-4 text-left text-sm font-semibold text-gray-700 ${
+                      h === "Actions" ? "print-hide" : ""
+                    }`}
                   >
                     {h}
                   </th>
@@ -122,7 +158,7 @@ export default function TablePage() {
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody className="divide-y divide-gray-200">
               {records.length === 0 && (
                 <tr>
                   <td colSpan={7} className="text-center py-10 text-gray-400">
@@ -132,16 +168,14 @@ export default function TablePage() {
               )}
 
               {records.map((r) => (
-                <tr key={r._id} className="table-row-hover transition">
-                  <td className="px-6 py-4 text-sm">{r.serialNo}</td>
-                  <td className="px-6 py-4 text-sm">{r.voterNo}</td>
-                  <td className="px-6 py-4 font-medium text-gray-800">
-                    {r.name}
-                  </td>
-                  <td className="px-6 py-4 text-sm">{r.fatherName}</td>
-                  <td className="px-6 py-4 text-sm">{r.house}</td>
-                  <td className="px-6 py-4 text-sm">{r.holdingNo}</td>
-                  <td className="px-6 py-4">
+                <tr key={r._id} className="hover:bg-indigo-50 transition">
+                  <td className="px-6 py-3 text-sm">{r.serialNo}</td>
+                  <td className="px-6 py-3 text-sm">{r.voterNo}</td>
+                  <td className="px-6 py-3 font-medium">{r.name}</td>
+                  <td className="px-6 py-3 text-sm">{r.fatherName}</td>
+                  <td className="px-6 py-3 text-sm">{r.house}</td>
+                  <td className="px-6 py-3 text-sm">{r.holdingNo}</td>
+                  <td className="px-6 py-3 print-hide">
                     <div className="flex gap-2 justify-center">
                       <button
                         onClick={() => setSelected(r)}
@@ -164,7 +198,7 @@ export default function TablePage() {
         </div>
       </div>
 
-      {/* Edit Modal */}
+      {/* ================= MODAL ================= */}
       {selected && (
         <EditModal
           record={selected}

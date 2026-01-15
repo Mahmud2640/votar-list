@@ -107,3 +107,39 @@
   background: #eef2ff;
   z-index: 10;
 }
+
+/* for print */
+@page {
+  size: A4;
+  margin: 8mm;
+}
+
+@media print {
+  body {
+    background: white !important;
+  }
+  .print-hide {
+    display: none !important;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  th {
+    background: #f3f4f6 !important;
+    color: #000 !important;
+  }
+  th,
+  td {
+    padding: 8px !important;
+    border: 1px solid #d1d5db !important;
+  }
+  tr {
+    page-break-inside: avoid;
+  }
+  .table-card {
+    box-shadow: none !important;
+  }
+}
