@@ -15,11 +15,13 @@ mongoose
 
 // Root route
 app.get("/", (req, res) => {
-  res.send("Hello World! Votar List Server is running.");
+  res.send("Hello World! Server is running.");
 });
 
 // API routes
 app.use("/api/records", require("./routes/records"));
+app.use("/api", require("./routes/auth"));
+
 
 // Local dev server
 if (require.main === module) {

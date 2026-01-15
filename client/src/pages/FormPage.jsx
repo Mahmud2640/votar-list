@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import api from "../services/api";
 import { validateRecord } from "../utils/validators";
 import Input from "../components/Input";
+import { logout } from "../utils/auth";
 
 export default function FormPage() {
   const navigate = useNavigate();
@@ -144,6 +145,15 @@ export default function FormPage() {
             View List
           </button>
         </div>
+        <button
+          onClick={() => {
+            logout();
+            window.location.reload();
+          }}
+          className="bg-red-500 text-white px-3 py-1 mt-3 rounded hover:bg-red-600 transition"
+        >
+          Logout
+        </button>
       </form>
     </div>
   );
